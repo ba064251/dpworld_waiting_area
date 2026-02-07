@@ -38,7 +38,7 @@ class _CounterScreenAppState extends State<CounterScreenApp> {
             return ValueListenableBuilder(valueListenable: counters.listenable(), builder: (context, value, _) {
               final countersData = counters.get('countersData');
               if(countersData != null){return
-                CategorySection(title: categoryData[0]['categorytitle'],startIndex: categoryData[0]['Start_Index'], endIndex: categoryData[0]['End_Index'],);
+                CategorySection(title: categoryData[index]['categorytitle'],startIndex: categoryData[index]['Start_Index'], endIndex: categoryData[index]['End_Index'],);
                 // GridView.builder(
                 // shrinkWrap: true,
                 // physics: const ScrollPhysics(),
@@ -104,18 +104,5 @@ class _CounterScreenAppState extends State<CounterScreenApp> {
           },)
       ),
     );
-  }
-}
-
-
-class CategoryDivider extends StatelessWidget {
-  const CategoryDivider({super.key, required this.title, required this.cateID});
-
-  final String title;
-  final int cateID;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
   }
 }
