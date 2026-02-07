@@ -12,6 +12,7 @@ void main() async {
   ]);
   await Hive.initFlutter();
   await Hive.openBox("CounterBox");
+  await Hive.openBox("CounterCategoryBox");
   runApp(const MyApp());
 }
 
@@ -27,8 +28,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context)=> IPManager()),
       ],
       child: MaterialApp(
-        // home: SplashScreen(),
-        home: TicketScreenApp(),
+        home: SplashScreen(),
         debugShowCheckedModeBanner: false
       ),
     );

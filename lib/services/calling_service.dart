@@ -80,7 +80,7 @@ class CallingProvider with ChangeNotifier {
 
   Future<void> getCategoryCounter() async {
     final baseURL = await apiServices.getIP();
-    final Box box = Hive.box('CategoryCounterBox');
+    final Box box = Hive.box('CounterCategoryBox');
 
     try {
       final url = Uri.parse('$baseURL/api/get-category-counters');
@@ -100,17 +100,6 @@ class CallingProvider with ChangeNotifier {
         try {
           final data = jsonDecode(res);
           box.put("countersCateData", data);
-          debugPrint(data);
-          for (var item in data) {
-            if (item['CalledFlag'] == 'N' && item['TicketNumber'] != "0000") {
-              _audioQueue.add({
-                'TicketNumber': item['TicketNumber'],
-                'CounterID': item['CounterID'],
-                'TicketID': item['TicketID']
-              });
-              debugPrint("Ticket Data: $_audioQueue");
-            }
-          }
         } catch (error) {
           debugPrint('Error: $error');
         }

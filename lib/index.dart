@@ -13,6 +13,7 @@ export '../views/splash_screen.dart';
 export '../views/password_screen.dart';
 export '../views/counter_screen_web.dart';
 export '../views/counter_screen_app.dart';
+export '../views/ticket_screen_app.dart';
 
 
 export 'package:provider/provider.dart';
