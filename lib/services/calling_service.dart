@@ -78,6 +78,51 @@ class CallingProvider with ChangeNotifier {
     }
   }
 
+  Future<void> getCategoryCounter() async {
+    final baseURL = await apiServices.getIP();
+    final Box box = Hive.box('CategoryCounterBox');
+
+    try {
+      final url = Uri.parse('$baseURL/api/get-category-counters');
+
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+
+      final body = json.encode({"branchId": 7});
+
+
+      final response = await http.post(url, headers: headers, body: body);
+
+
+      if (response.statusCode == 200) {
+        final res = response.body;
+        try {
+          final data = jsonDecode(res);
+          box.put("countersCateData", data);
+          debugPrint(data);
+          for (var item in data) {
+            if (item['CalledFlag'] == 'N' && item['TicketNumber'] != "0000") {
+              _audioQueue.add({
+                'TicketNumber': item['TicketNumber'],
+                'CounterID': item['CounterID'],
+                'TicketID': item['TicketID']
+              });
+              debugPrint("Ticket Data: $_audioQueue");
+            }
+          }
+        } catch (error) {
+          debugPrint('Error: $error');
+        }
+      } else {
+        debugPrint('Failed to fetch data: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error fetching data: $e');
+    }
+  }
+
+
 
   // Play all audios in the queue
   Future<void> _playAudioQueue() async {

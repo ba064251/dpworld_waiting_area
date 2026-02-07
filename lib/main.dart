@@ -1,3 +1,5 @@
+import 'package:dp_world_waiting_area/views/ticket_screen_app.dart';
+
 import '../index.dart';
 
 
@@ -25,7 +27,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context)=> IPManager()),
       ],
       child: MaterialApp(
-        home: SplashScreen(),
+        // home: SplashScreen(),
+        home: TicketScreenApp(),
         debugShowCheckedModeBanner: false
       ),
     );
