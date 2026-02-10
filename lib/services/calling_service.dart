@@ -45,7 +45,9 @@ class CallingProvider with ChangeNotifier {
         'Content-Type': 'application/json',
       };
 
-      final body = json.encode({"branchId": 7});
+      final body = json.encode({
+        "branchId" : "7"
+      });
 
 
       final response = await http.post(url, headers: headers, body: body);
@@ -53,10 +55,10 @@ class CallingProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final res = response.body;
+        final data = jsonDecode(res);
+        box.put("countersData", data);
+        debugPrint('Data is : $data');
         try {
-          final data = jsonDecode(res);
-          box.put("countersData", data);
-          debugPrint(data);
           for (var item in data) {
             if (item['CalledFlag'] == 'N' && item['TicketNumber'] != "0000") {
               _audioQueue.add({
@@ -110,8 +112,6 @@ class CallingProvider with ChangeNotifier {
       debugPrint('Error fetching data: $e');
     }
   }
-
-
 
   // Play all audios in the queue
   Future<void> _playAudioQueue() async {

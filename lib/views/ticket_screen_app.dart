@@ -17,65 +17,68 @@ class CategorySection extends StatefulWidget {
 }
 
 class _CategorySectionState extends State<CategorySection> {
-
   final counters = Hive.box('CounterBox');
   List countersByCategory = [];
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    final counter = counters.get('countersData');
-
-    for(int start = widget.startIndex; start <= widget.endIndex; start++){
-      final singleCounter = counter.firstWhere((item) => item['CounterID'] == start);
-      if (singleCounter != null) {
-        countersByCategory.add(singleCounter);
-      }
-    }
-
-    super.initState();
-  }
 
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('List Data: $countersByCategory');
+    return ValueListenableBuilder(
+      valueListenable: counters.listenable(),
+      builder: (context, box, _) {
+        final counter = box.get('countersData') ?? [];
 
-    return SizedBox(
-      width: SizeConfig.screenWidth * 1,
-      height: SizeConfig.screenHeight * 0.33,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Category Title
-          Container(
-            margin: const EdgeInsets.only(left: 20.0),
-            child: Text(
-              widget.title,
-              style:  TextStyle(
-                fontSize: SizeConfig.textMultiplier * 4,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF000000),
-              ),
-            ),
-          ),
+        final List countersByCategory = [];
 
-          // Tickets Row
-          Row(
+        for (int start = widget.startIndex; start <= widget.endIndex; start++) {
+          final singleCounter = counter.firstWhere(
+            (item) => item['CounterID'] == start,
+            orElse: () => null,
+          );
+
+          if (singleCounter != null) {
+            countersByCategory.add(singleCounter);
+          }
+        }
+        return SizedBox(
+          width: SizeConfig.screenWidth * 1,
+          height: SizeConfig.screenHeight * 0.33,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(countersByCategory.length, (index) {
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: TicketCard(
-                    counter: countersByCategory[index]['CounterID'],
-                    ticketNumber: countersByCategory[index]['TicketNumber'],
+            children: [
+              // Category Title
+              Container(
+                margin: const EdgeInsets.only(left: 20.0),
+                child: Text(
+                  widget.title,
+                  style: TextStyle(
+                    fontSize: SizeConfig.textMultiplier * 4,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF000000),
                   ),
                 ),
-              );
-            },),
+              ),
+
+              // Tickets Row
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(countersByCategory.length, (index) {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: TicketCard(
+                        counter: countersByCategory[index]['CounterID'],
+                        ticketNumber: countersByCategory[index]['TicketNumber'],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -161,7 +164,7 @@ class TicketCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                ticketNumber,
+                ticketNumber == '-1' ? '----' : ticketNumber,
                 style: TextStyle(
                   fontSize: SizeConfig.textMultiplier * 4.5,
                   fontWeight: FontWeight.bold,
@@ -200,5 +203,3 @@ class TicketCard extends StatelessWidget {
     );
   }
 }
-
-
