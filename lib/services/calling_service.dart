@@ -137,32 +137,93 @@ class CallingProvider with ChangeNotifier {
   }
 
   // Play single ticket + counter audio
+  // Future<void> _playAudio(var ticketNumber, var counterID, int ticketID) async {
+  //   final tokenNumber = ticketNumber.toString();
+  //   final counterNumber = counterID.toString();
+  //
+  //   final tokenPath = 'tokens/token_$tokenNumber.mp3';
+  //   final counterPath = 'counters/counter_$counterNumber.mp3';
+  //
+  //   await _audioPlayer.play(AssetSource(tokenPath));
+  //
+  //   await Future.delayed(Duration(
+  //     milliseconds: tokenNumber.length == 3
+  //         ? 2400
+  //         : tokenNumber.length == 4
+  //         ? 2800
+  //         : 2000,
+  //   ));
+  //
+  //   await _audioPlayer.play(AssetSource(counterPath));
+  //
+  //   await Future.delayed(Duration(
+  //     milliseconds: counterNumber.length == 1 ? 2500 : 3500,
+  //   ));
+  //
+  //   await _audioPlayer.onPlayerComplete.first;
+  //   await apiServices.markTicketAsCalled(ticketID);
+  //   await Future.delayed(const Duration(seconds: 2));
+  // }
+
+  // Future<void> _playAudio(var ticketNumber, var counterID, int ticketID) async {
+  //   final tokenNumber = ticketNumber.toString();
+  //   final counterNumber = counterID.toString();
+  //
+  //   // 🔹 STEP 1: Split token number into digits
+  //   List<String> tokenDigits = tokenNumber.split('');
+  //
+  //   // 🔹 STEP 2: Play each digit audio one by one
+  //   for (String digit in tokenDigits) {
+  //     final tokenPath = 'tokens/token_$digit.mp3';
+  //     await _audioPlayer.play(AssetSource(tokenPath));
+  //
+  //     // small delay between digits so they don't overlap
+  //     await Future.delayed(const Duration(milliseconds: 700));
+  //   }
+  //
+  //   // 🔹 Counter audio (UNCHANGED)
+  //   final counterPath = 'counters/counter_$counterNumber.mp3';
+  //   await _audioPlayer.play(AssetSource(counterPath));
+  //
+  //   await Future.delayed(Duration(
+  //     milliseconds: counterNumber.length == 1 ? 2500 : 3500,
+  //   ));
+  //
+  //   await _audioPlayer.onPlayerComplete.first;
+  //   await apiServices.markTicketAsCalled(ticketID);
+  //   await Future.delayed(const Duration(seconds: 2));
+  // }
+
+
   Future<void> _playAudio(var ticketNumber, var counterID, int ticketID) async {
     final tokenNumber = ticketNumber.toString();
     final counterNumber = counterID.toString();
 
-    final tokenPath = 'tokens/token_$tokenNumber.mp3';
-    final counterPath = 'counters/counter_$counterNumber.mp3';
+    // Important for smooth chaining
+    await _audioPlayer.setReleaseMode(ReleaseMode.stop);
 
-    await _audioPlayer.play(AssetSource(tokenPath));
-
-    await Future.delayed(Duration(
-      milliseconds: tokenNumber.length == 3
-          ? 2400
-          : tokenNumber.length == 4
-          ? 2800
-          : 2000,
-    ));
-
-    await _audioPlayer.play(AssetSource(counterPath));
-
-    await Future.delayed(Duration(
-      milliseconds: counterNumber.length == 1 ? 2500 : 3500,
-    ));
-
+    // 🔹 Play "Token Number"
+    await _audioPlayer.play(AssetSource('tokens/token_Number.mp3'));
     await _audioPlayer.onPlayerComplete.first;
+
+    // 🔹 Split token digits
+    List<String> tokenDigits = tokenNumber.split('');
+
+    // 🔹 Play digits continuously (NO EXTRA DELAY)
+    for (String digit in tokenDigits) {
+      final tokenPath = 'tokens/token_$digit.mp3';
+      await _audioPlayer.play(AssetSource(tokenPath));
+      await _audioPlayer.onPlayerComplete.first;
+    }
+
+    // 🔹 Counter audio (unchanged)
+    final counterPath = 'counters/counter_$counterNumber.mp3';
+    await _audioPlayer.play(AssetSource(counterPath));
+    await _audioPlayer.onPlayerComplete.first;
+
     await apiServices.markTicketAsCalled(ticketID);
     await Future.delayed(const Duration(seconds: 2));
   }
+
 
 }
